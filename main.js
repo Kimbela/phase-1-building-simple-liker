@@ -35,15 +35,60 @@ mimicServerCall()
     fullHeart.classList.add('hidden');
   });
 
-function mimicServerCall(url="http://mimicServer.example.com", config={}) {
-  return new Promise(function(resolve, reject) {
-    setTimeout(function() {
-      let isRandomFailure = Math.random() < .2
-      if (isRandomFailure) {
-        reject("Random server error. Try again.");
-      } else {
-        resolve("Pretend remote server notified of action!");
-      }
-    }, 300);
+//function mimicServerCall(url="http://mimicServer.example.com", config={}) {
+  //return new Promise(function(resolve, reject) {
+    //setTimeout(function() {
+      //let isRandomFailure = Math.random() < .2
+      //if (isRandomFailure) {
+        //reject("Random server error. Try again.");
+      //} else {
+        //resolve("Pretend remote server notified of action!");
+      //}
+    //}, 300);
+  //});
+//}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const errorModal = document.getElementById("modal");
+  errorModal.classList.add("hidden");
+
+  const hearts = document.querySelectorAll(".like-glyph");
+
+  function mimicServerCall() {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const randomNum = Math.random();
+        if (randomNum < 0.5) {
+          resolve("success");
+        } else {
+          reject("error");
+        }
+      }, 300);
+    });
+  }
+
+  function toggleLike(event) {
+    const heart = event.target;
+    mimicServerCall()
+      .then(() => {
+        heart.classList.toggle("activated-heart");
+        if (heart.innerHTML === "♡") {
+          heart.innerHTML = "♥";
+        } else {
+          heart.innerHTML = "♡";
+        }
+      })
+      .catch(() => {
+        errorModal.classList.remove("hidden");
+        const errorMessage = document.getElementById("modal-message");
+        errorMessage.innerText = "Server Error";
+        setTimeout(() => {
+          errorModal.classList.add("hidden");
+        }, 3000);
+      });
+  }
+
+  hearts.forEach((heart) => {
+    heart.addEventListener("click", toggleLike);
   });
-}
+});
